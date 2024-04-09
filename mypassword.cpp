@@ -94,52 +94,6 @@ bool changePassword(const string& username, const string& newPassword) {
         return false;
     }
     
-    //Mo file /etc/shadow
-    ifstream shadowFile("/etc/shadow");
-    if (!shadowFile.is_open()) {
-	cerr << "Khong the mo file /etc/shadow" << endl;
-	return false;
-    }
-    // Tao file /etc/shadow
-    ofstream tempShadow("/etc/shadow.temp");
-    if (!tempShadow.is_open()) {
-	cerr << "Khong the tao file" << endl;
-	shadowFile.close();
-	return false;
-    }
-
-    string line2;
-    while (getline(shadowFile, line2)) {
-	stringstream ss(line2);
-	string usernameInFile;
-	getline(ss, usernameInFile, ':');
-
-	if (usernameInFile == username) {
-	    // Thay doi mat khau nguoi dung trong file /etc/shadow
-	    string oldpassword, s1, s2, s3, s4, s5,s6;
-	    getline(ss, oldpassword, ':');
-	    getline(ss, s1, ':');
-	    getline(ss, s2, ':');
-	    getline(ss, s3, ':');
-	    getline(ss, s4, ':');
-	    getline(ss, s5, ':');
-	    getline(ss, s6, ':');
-	    tempShadow << username << ":" << encryptedPassword << ":" << s1 << ":" << s2 << ":" << s3 << ":" << s4 << ":" << s5 << s6 << endl;
-	} else {
-	    // Neu la nguoi dung khac giu nguyen thong tin
-	    tempShadow << line2 << endl;
-	}
-    }
-    shadowFile.close();
-    tempShadow.close();
-
-    // Thay the file /etc/shadow voi file tam thoi vua tao
-    
-    if (rename("/etc/shadow.temp", "/etc/shadow") != 0) {
-        cerr << "Khong the cap nhat file /etc/shadow" << endl;
-        return false;
-    }
-    
     return true;
 }
 
